@@ -5,8 +5,10 @@ channels:
 dependencies:
   - python=3.6.9
   - pyaudio
-  - torch=1.11
-  - deepl
   - speechrecognition
   - transformers
-  - opencv-python
+  - pip
+  - pip:
+      - torch
+      - opencv-python
+      - deepl
