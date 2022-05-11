@@ -1,0 +1,17 @@
+Speaker;Utterance;Emotion;Sentiment
+
+;;;
+
+Speaker;Utterance;Emotion;Sentiment
+
+Sassa;I feel like I'm going to cry;neutral;neutral
+Sassa;It was sad;neutral;neutral
+Sassa;I am angry;neutral;neutral
+Seb;I'm glad;neutral;neutral
+Alex;It's so cool he won;neutral;neutral
+Sassa;I'm fine;neutral;neutral
+Sassa;I'm fine;neutral;neutral
+Sassa;The weather is beautiful;neutral;neutral
+Sassa;I'll probably go swimming;neutral;neutral
+
+reza;I test now that I have changed the end of the line;neutral;neutral

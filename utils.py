@@ -156,6 +156,12 @@ def make_batch_gpt(sessions):
         batch_speaker_tokens.append(padding_gpt(speaker_utt_list, gpt_tokenizer))
     
     batch_input_tokens = padding_gpt(batch_input, gpt_tokenizer)
-    batch_labels = torch.tensor(batch_labels)    
+    batch_labels = torch.tensor(batch_labels)
     
     return batch_input_tokens, batch_labels, batch_speaker_tokens
+
+def create_save_file(filename):
+    f = open(filename, 'w')
+    f.write("Speaker;Utterance;Emotion;Sentiment\n")
+    f.write("\n")
+    f.close()

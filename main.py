@@ -11,7 +11,7 @@ import speech_recognition as sr
 
 from ERC_dataset import MELD_loader
 from model import ERC_model
-from utils import make_batch_roberta
+from utils import make_batch_roberta, create_save_file
 
 import warnings
 
@@ -57,6 +57,7 @@ def prediction():
     time_getcount = time.time() - start
     # start2 = time.time()
     # print(f"get count : {time_getcount} sec")
+    print(last)
     for i, data in enumerate(test_dataloader):
         if last == i:
             b_input, b_label, b_speaker = data
@@ -104,12 +105,13 @@ def erc_keyboard():
     participant = input("Name? ")
     return participant
     # msg = input("Message ")
-    msg = translator.translate_text(msg, source_lang="FR", target_lang="EN-US")
-    conversation = open(test_path, 'a')
+    # msg = translator.translate_text(msg, source_lang="FR", target_lang="EN-US")
+    # conversation = open(test_path, 'a')
     # conversation.write(f"{participant};{msg};neutral;neutral\n")
 
 
 def main():
+    create_save_file(test_path)
     while 1:
         if erc_speech(erc_keyboard()):
             pred = prediction()
