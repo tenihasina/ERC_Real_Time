@@ -1,5 +1,7 @@
 # ERC_Real_Time
 
+* execute main.py to test the ERC model using TTS or textual input from the terminal
+* Logs are saved by default
 * Use the yml file to create the virtual env 
 * Might require to install portaudio and flac on windows to make the audio recording work
 
