@@ -3,14 +3,13 @@ import time
 
 import deepl
 import torch
-import socket
 from deepl import translator
 from torch.utils.data import DataLoader
 from transformers import RobertaTokenizer
 import speech_recognition as sr
 
-from ERC_dataset import MELD_loader
-from model import ERC_model
+from src.ERC_dataset import MELD_loader
+from src.ERC_model import ERC_model
 from utils import make_batch_roberta, create_save_file
 
 import warnings
