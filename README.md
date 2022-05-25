@@ -5,7 +5,7 @@
 
 #KAMUH
 
-This repository is a public implementation of the paper : "Knowledge Aware Multi-Headed Network with Dialogue Act and Emotion Shift Multi-Task Learning for Emotion Recognition in Conversation"
+This repository is a public implementation of the paper : "Real-Time Multimodal Emotion Recognition in Conversation for Multi-Party Interactions"
 
 ## Datasets
 
