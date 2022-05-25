@@ -10,7 +10,7 @@ import speech_recognition as sr
 
 from src.ERC_dataset import MELD_loader
 from src.ERC_model import ERC_model
-from utils import make_batch_roberta, create_save_file
+from src.ERC_utils import make_batch_roberta, create_save_file
 
 import warnings
 

@@ -21,7 +21,9 @@ This repository is a public implementation of the paper : "Knowledge Aware Multi
 * Pytorch
 * scikit-learn
 * ATOMIC (extraction functions are already copied in repository) : https://github.com/atcbosselut/comet-commonsense
-
+* Text extraction: https://huggingface.co/roberta-base
+* Audio extraction: https://github.com/fatchord/WaveRNN
+* Video extraction : https://github.com/act-labs/video_facenet/
 ## Baseline
 
 * Dialog-XL : https://github.com/shenwzh3/DialogXL
