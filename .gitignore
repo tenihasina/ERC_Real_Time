@@ -5,7 +5,7 @@ model.tar.gz
 __pycache__/
 *.py[cod]
 *$py.class
-
+*.wav
 # C extensions
 *.so
 
