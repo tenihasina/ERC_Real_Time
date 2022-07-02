@@ -6,7 +6,7 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 from torch.nn.utils.rnn import pad_sequence
 import numpy as np, itertools, random, copy, math
-from utils import SimpleAttention, MatchingAttention, Attention
+from src.utils import SimpleAttention, MatchingAttention, Attention
 from modeling import MAG
 
 class MemoryBankCell(nn.Module):

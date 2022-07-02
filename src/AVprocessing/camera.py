@@ -9,7 +9,7 @@ def list_ports():
     dev_port = 0
     working_ports = []
     available_ports = []
-    while dev_port<=10:
+    while dev_port <= 10:
         camera = cv2.VideoCapture(dev_port)
         if not camera.isOpened():
             is_working = False
@@ -19,13 +19,13 @@ def list_ports():
             w = camera.get(3)
             h = camera.get(4)
             if is_reading:
-                print("Port %s is working and reads images (%s x %s)" %(dev_port,h,w))
+                print("Port %s is working and reads images (%s x %s)" %(dev_port, h, w))
                 working_ports.append(dev_port)
             else:
-                print("Port %s for camera ( %s x %s) is present but does not reads." %(dev_port,h,w))
+                print("Port %s for camera ( %s x %s) is present but does not reads." %(dev_port, h, w))
                 available_ports.append(dev_port)
-        dev_port +=1
-    return available_ports,working_ports
+        dev_port += 1
+    return available_ports, working_ports
 
 class camThread(threading.Thread):
     def __init__(self, previewName, camID):
@@ -37,8 +37,12 @@ class camThread(threading.Thread):
         camPreview(self.previewName, self.camID)
 
 def camPreview(previewName, camID):
+    print(f"thread for {previewName} is starting")
     cv2.namedWindow(previewName)
+    print(f"named window for {previewName} is starting")
     cam = cv2.VideoCapture(camID)
+    print(f"capture video for {previewName} is starting")
+
     if cam.isOpened():  # try to get the first frame
         rval, frame = cam.read()
     else:
@@ -53,10 +57,3 @@ def camPreview(previewName, camID):
     cv2.destroyWindow(previewName)
 
 list_ports()
-# Create two threads as follows
-thread1 = camThread("Camera 1", 0)
-thread2 = camThread("Camera 2", 2)
-thread3 = camThread("Camera 3", 4)
-# thread1.start()
-# thread2.start()
-thread3.start()
