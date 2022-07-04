@@ -1,25 +1,17 @@
 import os
+import re
 
 import cv2
-import settings
+from speechbrain.pretrained import SpeakerRecognition
+
+import src.AVprocessing.settings as settings
 from src.ERC_utils import create_save_file
-
-
-def verify_speaker(f1, verification):
-    name = "UNKNOWN"
-    for f2 in ["record/original_Sassa.wav"]:
-        score, pred = verification.verify_files(f1, f2)
-        if pred:
-            print(f"same speaker, confidence : {score}")
-            name = f2.split("_")[1]
-        else:
-            print(f"not the same speaker : {score}")
-            return name.split(".")[0]
 
 
 def save_audio(file_name, raw_data):
     with open(file_name, "wb") as f:
         f.write(raw_data)
+        f.close()
 
 
 def switch_emo(t_emo):
@@ -80,7 +72,25 @@ def addPrediction(file_path, text):
 
         with(open(saveFile, 'a')) as f:
             f.write(text)
+            f.close()
         return saveFile
     except OSError as e:
         print(e.errno)
 
+
+def cleanFiles():
+    audio = ".*(.wav)"
+    video = ".*(.avi)"
+    audio_main = "(audio).*.wav"
+    print('cleaning working directory')
+    for f in os.listdir(os.getcwd()):
+        wd_match = re.match(audio_main, f)
+        if wd_match:
+            os.remove(os.path.join(os.getcwd(),f))
+    print('cleaning logs/record')
+    for f in os.listdir("logs/record"):
+        audio_match = re.match(audio, f)
+        video_match = re.match(video, f)
+        if audio_match or video_match:
+            os.remove(os.path.join("logs/record", f))
+    print('DONE CLEANING')

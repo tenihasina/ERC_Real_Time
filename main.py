@@ -19,6 +19,8 @@ from src.AVprocessing.utils import *
 
 import warnings
 
+from src.operator.participant import Participant, get_sentiment
+
 warnings.filterwarnings('ignore', category=FutureWarning)
 roberta_tokenizer = RobertaTokenizer.from_pretrained('roberta-large')
 model = ERC_model(model_type, clsNum, False, freeze_type, "pretrained")
@@ -35,13 +37,27 @@ translator = deepl.Translator(DEEPL_AUTH_KEY)
 classifier = foreign_class(source="speechbrain/emotion-recognition-wav2vec2-IEMOCAP",
                            pymodule_file="custom_interface.py", classname="CustomEncoderWav2vec2Classifier")
 # Create classifier for Speaker recognition
+
+r = sr.Recognizer()
+# sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# sock.connect(address)
+# address = ('172.18.37.43', 9999)
 verification = SpeakerRecognition.from_hparams(source="speechbrain/spkrec-ecapa-voxceleb",
                                                savedir="pretrained_models/spkrec-ecapa-voxceleb")
 
 
-# sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# sock.connect(address)
-# address = ('172.18.37.43', 9999)
+def verify_speaker(f1, original):
+    name = "UNKNOWN"
+    f2 = os.path.join("original/", f"original_{original}.wav")
+    score, pred = verification.verify_files(f1, f2)
+    if pred:
+        print(f"same speaker, confidence : {score}")
+        name = original
+        print(f"it is {name}")
+    else:
+        print(f"not the same speaker, confidence : {score}")
+        # return name.split(".")[0]
+    return name, pred
 
 
 def prediction(save_file):
@@ -70,10 +86,9 @@ def getCount(test_dataloader):
     return cnt
 
 
-def erc_speech(participant, count, id_camera, save_file):
-    r = sr.Recognizer()
-    # success = False
-    name_audio = f"{path_audio}_{participant}_{count}.wav"
+def get_speech(participant, count, id_camera, save_file): #save_file
+
+    name_audio = f"{path_audio}_{participant}_CAM_{id_camera}__{count}.wav"
     try:
         # settings.done_recording = False
         # thread = threading.Thread(target = run, args =(lambda : settings.done_recording, id_camera))
@@ -81,7 +96,8 @@ def erc_speech(participant, count, id_camera, save_file):
             print("Say something !")
             # cameras = start_cameras(id_camera)
             # thread.start()
-            vr.start_video_recording(id_camera=int(id_camera), filename=f"{path_video}_CAM_{id_camera}_{participant}_{count}.avi")
+            name_video = f"{path_video}_CAM_{id_camera}_{participant}_{count}.avi"
+            vr.start_video_recording(id_camera=int(id_camera), filename=name_video)
             audio = r.listen(source)
         # settings.done_recording = True
         # thread.join()
@@ -89,23 +105,30 @@ def erc_speech(participant, count, id_camera, save_file):
         vr.stop_AVrecording()
         vr.file_manager()
         # kill_cameras(cameras)
-        sentence = r.recognize_google(audio, language="fr-FR")
-        out_prob, score, index, text_lab = classifier.classify_file(name_audio)
-        real_name = verify_speaker(name_audio, verification)
-        save_audio(f"{path_audio}_{real_name}_{count}.wav", audio.get_wav_data())
-        if os.path.exists(name_audio):
-            os.remove(name_audio)
-        text_lab = text_lab[0]
-        print(f"Google Speech Recognition thinks {real_name} said : {sentence}")
-        # print(f"emotion : {text_lab}, confidence : {score}")
+        real_name, same_participant = verify_speaker(name_audio, participant)
+        if same_participant:
+            sentence = r.recognize_google(audio, language="fr-FR")
+            out_prob, score, index, text_lab = classifier.classify_file(name_audio)
 
-        msg = translator.translate_text(sentence, source_lang="FR", target_lang="EN-US")
-        text_prediction = f"{real_name};{msg};{switch_emo(text_lab)};{switch_emo(text_lab)}\n"
-        save_file = addPrediction(save_file, text_prediction)
+            save_audio(f"{path_audio}_{real_name}_CAM_{id_camera}_{count}.wav", audio.get_wav_data())
+            os.rename(name_video, f"{path_video}_CAM_{id_camera}_{real_name}_{count}.avi")
+            if os.path.exists(name_audio):
+                os.remove(name_audio)
+            text_lab = text_lab[0]
+            print(f"Google Speech Recognition thinks {real_name} said : {sentence}")
+            # print(f"emotion : {text_lab}, confidence : {score}")
+
+            msg = translator.translate_text(sentence, source_lang="FR", target_lang="EN-US")
+            print(f"switch emo : {switch_emo(text_lab)}")
+            sentiment = get_sentiment(switch_emo(text_lab))
+
+            text_prediction = f"{real_name};{msg};{switch_emo(text_lab)};{sentiment}\n"
+            save_file = addPrediction(save_file, text_prediction)
         # conversation = open(test_path, 'a')
         # conversation.write(f"{real_name};{msg};{switch_emo(text_lab)};{switch_emo(text_lab)}\n")
-        success = True
-        return success, save_file
+        else:
+            print("not the same speaker, don't do anything")
+        return same_participant, save_file, real_name
     except sr.UnknownValueError:
         print("Google Speech Recognition could not understand audio")
     except sr.RequestError as e:
@@ -115,17 +138,22 @@ def erc_speech(participant, count, id_camera, save_file):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--id", default=0, help="camera id")
+    parser.add_argument("--participant", default="UNKNOWN", help="participant's name")
     args = parser.parse_args()
-
+    # cleanFiles()
     create_save_file(settings.test_path)
     count = 0
     save_file = settings.test_path
     while 1:
-        success, save_file = erc_speech("Participant", count, args.id, save_file)
+        success, save_file, real_name = get_speech(args.participant, count, args.id, save_file)
         if success:
             pred = prediction(save_file)
+            participant = Participant(name=real_name)
+            participant.attitudes.append(pred)
             # sock.send(pred.encode('utf-8'))
-            print(f"Prediction : {pred}")
+            print(f"{participant.name} : current attitude {participant.current_attitude}")
+            major_emotion = participant.get_major_attitude()
+            print(f"Majority : {major_emotion}, sentiment from majority : {get_sentiment(major_emotion)}")
             count = count + 1
 
 
