@@ -143,8 +143,8 @@ def stop_AVrecording(filename="test"):
     video_thread.stop()
 
     # Makes sure the threads have finished
-    while threading.active_count() > 1:
-        time.sleep(1)
+    # while threading.active_count() > 1:
+    #     time.sleep(1)
 
     # Merging audio and video signal
     # if abs(recorded_fps - 6) >= 0.01:    # If the fps rate was higher/lower than expected, re-encode it to the expected
@@ -178,4 +178,4 @@ if __name__ == '__main__':
     start_AVrecording()
     time.sleep(5)
     stop_AVrecording()
-    file_manager()
+    # file_manager()

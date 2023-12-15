@@ -1,12 +1,15 @@
 import os
 import re
-
+import time
 import cv2
 from speechbrain.pretrained import SpeakerRecognition
 
 import src.AVprocessing.settings as settings
 from src.ERC_utils import create_save_file
 
+
+def get_local_time_as_str():
+    return time.strftime("%d_%m_%Y_%H:%M:%S", time.localtime())
 
 def save_audio(file_name, raw_data):
     with open(file_name, "wb") as f:

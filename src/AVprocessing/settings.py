@@ -3,7 +3,7 @@ import os
 original_files = ["logs/record/original_Sassa.wav"]
 path_audio = "logs/record/audio"
 path_video = "logs/record/video"
-
+abs_path_video = "/home/sandratra/Documents/thesis/ERC_Real_Time/logs/record/video/"
 emodict = {'anger': "anger", 'disgust': "disgust", 'fear': "fear", 'joy': "joy", 'neutral': "neutral", 'sadness': "sad",
            'surprise': 'surprise'}
 emotion = list(emodict.values())
@@ -25,3 +25,4 @@ id_cameras = [0, 2, 4]
 done_recording = False
 MAX_LINES = 5
 #
+PARTICIPANTS = ["UNKNOWN", "Melodie", "Benedicte", "Atef"]
